@@ -97,7 +97,7 @@ tailwind.config = {
             </button>
         </div>
 
-        <button onclick="sb.close()" class="w-10 h-10 rounded-lg flex items-center justify-center text-sb-text2 hover:text-sb-text hover:bg-white/10 transition">
+        <button onclick="sb.close()" class="w-10 h-10 rounded-lg flex items-center justify-center bg-black text-white hover:bg-white hover:text-black transition">
             <i class="fa-solid fa-xmark text-xl"></i>
         </button>
     </div>
@@ -822,6 +822,9 @@ tailwind.config = {
         sb.reqLb(cat);
     }
 
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') sb.close();
+});
 </script>
 </body>
 </html>
@@ -848,13 +851,29 @@ function StockBoard.OpenMenu()
     frame.Paint = function() end
     StockBoard.MenuFrame = frame
 
+    hook.Add("PlayerBindPress", "StockBoard_BlockESC", function(_, bind)
+        if string.find(bind, "cancelselect") and IsValid(frame) then
+            frame:Close()
+            return true
+        end
+    end)
+
+    frame.OnClose = function()
+        hook.Remove("PlayerBindPress", "StockBoard_BlockESC")
+    end
+
     local dhtml = vgui.Create("DHTML", frame)
     dhtml:Dock(FILL)
     dhtml:SetAllowLua(true)
     StockBoard.DHTML = dhtml
 
     -- Bridge
-    dhtml:AddFunction("sb", "close", function() if IsValid(frame) then frame:Close() end end)
+    dhtml:AddFunction("sb", "close", function()
+        if IsValid(frame) then
+            frame:Close()
+            timer.Simple(0, function() gui.HideGameUI() end)
+        end
+    end)
     
     dhtml:AddFunction("sb", "buy", function(id, qty)
         print("[StockBoard] Client Requesting BUY: " .. tostring(id) .. " x" .. tostring(qty))
@@ -879,6 +898,7 @@ function StockBoard.OpenMenu()
     end)
 
     dhtml:SetHTML(StockBoard.BuildHTML())
+    dhtml:RequestFocus()
 end
 
 function StockBoard.BuildHTML()
