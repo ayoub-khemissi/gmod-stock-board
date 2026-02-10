@@ -1,0 +1,14 @@
+{
+	"title": "Stock Board",
+	"type": "ServerContent",
+	"tags": [
+		"roleplay",
+		"fun"
+	],
+	"ignore": [
+		"*.md",
+		"*.psd",
+		".git",
+		".gitignore"
+	]
+}
