@@ -125,6 +125,7 @@ StockBoard.Config.UI = {
     EmptyPort   = "You don't own any stocks yet.",
 
     -- Stats
+    StatsTitle  = "My Stats",
     LblInvested = "Total Invested",
     LblProfit   = "Realized Profit",
     LblTrades   = "Trades Count",

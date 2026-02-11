@@ -187,60 +187,87 @@ tailwind.config = {
 
         <!-- STATS TAB -->
         <div id="page-stats" class="h-full overflow-y-auto px-8 py-6 hidden">
-            <!-- Player Stats Grid -->
-            <div class="grid grid-cols-4 gap-4 mb-8">
-                <div class="bg-sb-card border border-sb-border rounded-xl p-5">
-                    <p class="text-xs text-sb-text2 font-bold uppercase mb-1">{{LblInvested}}</p>
-                    <div class="text-2xl font-bold text-white" id="stat-invested">0</div>
-                </div>
-                <div class="bg-sb-card border border-sb-border rounded-xl p-5">
-                    <p class="text-xs text-sb-text2 font-bold uppercase mb-1">{{LblProfit}}</p>
-                    <div class="text-2xl font-bold" id="stat-profit">0</div>
-                </div>
-                <div class="bg-sb-card border border-sb-border rounded-xl p-5">
-                    <p class="text-xs text-sb-text2 font-bold uppercase mb-1">{{LblTrades}}</p>
-                    <div class="text-2xl font-bold text-white" id="stat-trades">0</div>
-                </div>
-                <div class="bg-sb-card border border-sb-border rounded-xl p-5">
-                    <p class="text-xs text-sb-text2 font-bold uppercase mb-1">{{LblBest}}</p>
-                    <div class="text-2xl font-bold text-sb-success" id="stat-best">0</div>
-                </div>
-            </div>
-
-            <!-- Rank Progress -->
-            <div class="bg-sb-card border border-sb-border rounded-xl p-6 mb-8 flex items-center gap-6">
-                <div class="w-16 h-16 rounded-full bg-sb-accent/10 flex items-center justify-center border-2 border-sb-accent text-sb-accent text-2xl">
-                    <i id="rank-icon" class="fa-solid fa-user"></i>
-                </div>
+            <div class="flex gap-6">
+                <!-- Left: Personal stats + Rank -->
                 <div class="flex-1">
-                    <div class="flex justify-between items-end mb-2">
-                        <div>
-                            <p class="text-xs text-sb-text2 font-bold uppercase">{{LblRank}}</p>
-                            <h2 class="text-xl font-black text-sb-accent" id="rank-name">Intern</h2>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs text-sb-text2 font-bold" id="rank-next-label">Next: Trader</p>
-                            <p class="text-sm font-bold text-white" id="rank-progress-text">0 / 5,000</p>
-                        </div>
+                    <div class="flex items-center justify-between mb-5">
+                        <h2 class="text-lg font-bold text-sb-title flex items-center gap-2">
+                            <i class="fa-solid fa-chart-bar text-sb-accent text-sm"></i> {{StatsTitle}}
+                        </h2>
+                        <button onclick="refreshStats()" id="btn-refresh-stats" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-900 border border-white/80 hover:bg-gray-100 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrows-rotate text-[10px]"></i> Refresh
+                        </button>
                     </div>
-                    <div class="h-3 bg-sb-card2 rounded-full overflow-hidden">
-                        <div id="rank-bar" class="h-full bg-sb-accent transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Leaderboard -->
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-ranking-star text-sb-accent"></i> Top Investors
-                </h3>
-                <div class="flex gap-2">
-                    <button id="lb-btn-totalProfit" onclick="reqLb('totalProfit')" class="text-xs font-bold px-3 py-1 rounded bg-sb-accent text-sb-bg border border-sb-accent">Profit</button>
-                    <button id="lb-btn-trades" onclick="reqLb('trades')" class="text-xs font-bold px-3 py-1 rounded bg-sb-card border border-sb-border hover:border-sb-accent">Trades</button>
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="border border-sb-border rounded-xl p-4 bg-sb-card/50 text-center">
+                            <div class="text-xs font-bold text-sb-text2 mb-1">{{LblInvested}}</div>
+                            <div id="stat-invested" class="text-lg font-black text-white">0</div>
+                        </div>
+                        <div class="border border-sb-border rounded-xl p-4 bg-sb-card/50 text-center">
+                            <div class="text-xs font-bold text-sb-text2 mb-1">{{LblProfit}}</div>
+                            <div id="stat-profit" class="text-lg font-black text-sb-accent">0</div>
+                        </div>
+                        <div class="border border-sb-border rounded-xl p-4 bg-sb-card/50 text-center">
+                            <div class="text-xs font-bold text-sb-text2 mb-1">{{LblTrades}}</div>
+                            <div id="stat-trades" class="text-lg font-black text-white">0</div>
+                        </div>
+                        <div class="border border-sb-border rounded-xl p-4 bg-sb-card/50 text-center">
+                            <div class="text-xs font-bold text-sb-text2 mb-1">{{LblBest}}</div>
+                            <div id="stat-best" class="text-lg font-black text-sb-success">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Rank -->
+                    <div class="border border-sb-border rounded-xl p-5 bg-sb-card/50 mb-6">
+                        <div class="text-xs font-bold text-sb-text2 tracking-wider mb-3">{{LblRank}}</div>
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="w-14 h-14 rounded-full bg-sb-accent/20 flex items-center justify-center">
+                                <i id="rank-icon-i" class="fa-solid fa-user text-sb-accent text-2xl"></i>
+                            </div>
+                            <div>
+                                <div id="rank-name" class="text-xl font-black text-sb-accent">Intern</div>
+                                <div id="rank-threshold" class="text-xs text-sb-text2">$0 profit</div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="w-full h-3 rounded-full bg-sb-bg overflow-hidden border border-sb-border">
+                                <div id="rank-bar" class="h-full rounded-full bg-gradient-to-r from-sb-accent to-sb-accentlt transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                            <div class="flex justify-between mt-1">
+                                <span id="rank-current-label" class="text-[10px] text-sb-text2">Intern</span>
+                                <span id="rank-next-label" class="text-[10px] text-sb-text2">Trader</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="bg-sb-card border border-sb-border rounded-xl overflow-hidden" id="lb-container">
-                <!-- LB items -->
+
+                <!-- Right: Leaderboard -->
+                <div class="w-80 shrink-0">
+                    <h3 class="text-xs font-bold text-sb-text2 tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-sb-accent"></i> Top Investors
+                    </h3>
+
+                    <!-- Category pills -->
+                    <div class="flex gap-1 mb-4">
+                        <button onclick="reqLb('totalProfit')" id="lb-pill-totalProfit" class="px-3 py-1.5 rounded-full text-xs font-bold bg-sb-accent text-sb-bg border border-sb-accent transition">Profit</button>
+                        <button onclick="reqLb('trades')" id="lb-pill-trades" class="px-3 py-1.5 rounded-full text-xs font-bold bg-sb-card text-sb-text2 border border-sb-border transition hover:bg-sb-card2">Trades</button>
+                    </div>
+
+                    <!-- Leaderboard table -->
+                    <div id="lb-container" class="space-y-1.5">
+                        <div class="text-center text-sb-text2 text-sm py-8">No data</div>
+                    </div>
+
+                    <!-- Your position -->
+                    <div id="lb-my-position" class="hidden mt-4 border border-sb-accent/30 rounded-xl p-3 bg-sb-accent/5">
+                        <div class="text-[10px] font-bold text-sb-text2 tracking-wider mb-1">Your Position</div>
+                        <div class="flex items-center justify-between">
+                            <span id="lb-my-rank" class="text-sm font-bold text-sb-accent">#-</span>
+                            <span id="lb-my-value" class="text-sm font-bold text-sb-text">0</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -376,7 +403,7 @@ tailwind.config = {
             }
         });
         if (id === 'charts') renderCharts();
-        if (id === 'stats') sb.reqLb('totalProfit');
+        if (id === 'stats') refreshStats();
         if (id === 'market') setTimeout(renderMarket, 50); // slight delay to ensure layout is ready
     }
 
@@ -731,58 +758,84 @@ tailwind.config = {
         document.getElementById('stat-profit').innerText = formatMoney(s.totalProfit.toFixed(0));
         document.getElementById('stat-trades').innerText = s.trades;
         document.getElementById('stat-best').innerText = formatMoney(s.biggestTrade.toFixed(0));
-        
+
         // Rank (only positive profit counts toward progression)
         let rank = RANKS[0];
         let nextRank = RANKS[1];
         let p = Math.max(0, s.totalProfit);
-        
+
         for(let i=0; i<RANKS.length; i++) {
             if (p >= RANKS[i].threshold) {
                 rank = RANKS[i];
                 nextRank = RANKS[i+1];
             }
         }
-        
+
         document.getElementById('rank-name').innerText = rank.name;
-        document.getElementById('rank-icon').className = "fa-solid " + rank.icon;
-        
+        document.getElementById('rank-icon-i').className = "fa-solid " + rank.icon + " text-sb-accent text-2xl";
+        document.getElementById('rank-threshold').innerText = formatMoney(p.toFixed(0)) + " profit";
+
         if (nextRank) {
-            document.getElementById('rank-next-label').innerText = "Next: " + nextRank.name;
-            document.getElementById('rank-progress-text').innerText = formatMoney(p.toFixed(0)) + " / " + formatMoney(nextRank.threshold);
-            let pct = Math.min(100, Math.max(0, (p / nextRank.threshold) * 100));
+            document.getElementById('rank-current-label').innerText = rank.name;
+            document.getElementById('rank-next-label').innerText = nextRank.name + " (" + formatMoney(nextRank.threshold) + ")";
+            let pct = Math.min(100, Math.max(0, ((p - rank.threshold) / (nextRank.threshold - rank.threshold)) * 100));
             document.getElementById('rank-bar').style.width = pct + "%";
         } else {
-            document.getElementById('rank-next-label').innerText = "Max Rank";
-            document.getElementById('rank-progress-text').innerText = "";
+            document.getElementById('rank-current-label').innerText = rank.name;
+            document.getElementById('rank-next-label').innerText = "MAX RANK";
             document.getElementById('rank-bar').style.width = "100%";
         }
     }
     
-    function setLeaderboard(json) {
+    let currentLbCat = 'totalProfit';
+    let localSteamID = '';
+
+    function setLocalSteamID(id) { localSteamID = id; }
+
+    function setLeaderboard(json, cat, myRank, myValue) {
         let list = JSON.parse(json);
-        const div = document.getElementById('lb-container');
+        if (cat) currentLbCat = cat;
+        const container = document.getElementById('lb-container');
+        const myPos = document.getElementById('lb-my-position');
+
         if (!list || list.length === 0) {
-            div.innerHTML = '<div class="p-6 text-center text-sb-text2">No data</div>';
+            container.innerHTML = '<div class="text-center text-sb-text2 text-sm py-8">No data</div>';
+            if (myPos) myPos.classList.add('hidden');
             return;
         }
-        
-        div.innerHTML = list.map(e => {
-            let medal = `<span class="text-sb-text2 font-bold w-6">#${e.rank}</span>`;
-            if (e.rank === 1) medal = `<i class="fa-solid fa-trophy text-yellow-400 w-6"></i>`;
-            if (e.rank === 2) medal = `<i class="fa-solid fa-medal text-gray-300 w-6"></i>`;
-            if (e.rank === 3) medal = `<i class="fa-solid fa-medal text-amber-600 w-6"></i>`;
-            
-            return `
-            <div class="flex items-center justify-between p-4 border-b border-sb-border last:border-0 hover:bg-sb-card2 transition">
-                <div class="flex items-center gap-4">
-                    <div class="text-center">${medal}</div>
-                    <div class="font-bold">${esc(e.name)}</div>
-                </div>
-                <div class="font-bold text-sb-accent">${e.value.toLocaleString()}</div>
-            </div>
-            `;
+
+        let isCurrency = (currentLbCat !== 'trades');
+        let medals = ['', 'text-yellow-400', 'text-gray-400', 'text-amber-600'];
+        let medalIcons = ['', 'fa-crown', 'fa-medal', 'fa-medal'];
+
+        container.innerHTML = list.map((e, i) => {
+            let rank = i + 1;
+            let isMe = e.steamid === localSteamID;
+            let borderCls = isMe ? 'border-sb-accent bg-sb-accent/5' : 'border-sb-border bg-sb-card/50';
+            let valueStr = isCurrency ? formatMoney(e.value) : e.value.toLocaleString();
+            let medalHtml = rank <= 3 ? '<i class="fa-solid ' + medalIcons[rank] + ' ' + medals[rank] + '"></i>' : '<span class="text-sb-text2 text-xs font-bold">#' + rank + '</span>';
+
+            return '<div class="flex items-center gap-3 border ' + borderCls + ' rounded-lg px-3 py-2.5 transition">' +
+                '<div class="w-6 text-center shrink-0">' + medalHtml + '</div>' +
+                '<div class="flex-1 min-w-0"><div class="text-sm font-bold text-sb-text truncate">' + esc(e.name) + '</div></div>' +
+                '<div class="text-sm font-bold ' + (isMe ? 'text-sb-accent' : 'text-sb-text') + ' shrink-0">' + valueStr + '</div>' +
+            '</div>';
         }).join('');
+
+        // Show player position if not in top 10
+        if (myPos) {
+            if (myRank > 10 && myRank > 0) {
+                myPos.classList.remove('hidden');
+                document.getElementById('lb-my-rank').textContent = '#' + myRank;
+                document.getElementById('lb-my-value').textContent = isCurrency ? formatMoney(myValue) : myValue.toLocaleString();
+            } else if (myRank > 0) {
+                myPos.classList.add('hidden');
+            } else {
+                myPos.classList.remove('hidden');
+                document.getElementById('lb-my-rank').textContent = 'Unranked';
+                document.getElementById('lb-my-value').textContent = '-';
+            }
+        }
     }
     
     function updateEvent(json) {
@@ -804,22 +857,26 @@ tailwind.config = {
         }
     }
     
-    const LB_ACTIVE = ['bg-sb-accent', 'text-sb-bg', 'border-sb-accent'];
-    const LB_INACTIVE = ['bg-sb-card', 'border-sb-border', 'hover:border-sb-accent'];
-
     function reqLb(cat) {
+        currentLbCat = cat;
         ['totalProfit', 'trades'].forEach(c => {
-            let btn = document.getElementById('lb-btn-' + c);
-            if (!btn) return;
+            let pill = document.getElementById('lb-pill-' + c);
+            if (!pill) return;
             if (c === cat) {
-                LB_INACTIVE.forEach(cl => btn.classList.remove(cl));
-                LB_ACTIVE.forEach(cl => btn.classList.add(cl));
+                pill.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-sb-accent text-sb-bg border border-sb-accent transition';
             } else {
-                LB_ACTIVE.forEach(cl => btn.classList.remove(cl));
-                LB_INACTIVE.forEach(cl => btn.classList.add(cl));
+                pill.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-sb-card text-sb-text2 border border-sb-border transition hover:bg-sb-card2';
             }
         });
         sb.reqLb(cat);
+    }
+
+    function refreshStats() {
+        let icon = document.querySelector('#btn-refresh-stats i');
+        if (icon) icon.classList.add('animate-spin');
+        sb.reqLb(currentLbCat);
+        sb.requestStats();
+        setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 1000);
     }
 
 document.addEventListener('keydown', function(e) {
@@ -897,8 +954,14 @@ function StockBoard.OpenMenu()
         net.SendToServer()
     end)
 
+    dhtml:AddFunction("sb", "requestStats", function()
+        net.Start("StockBoard_RequestData")
+        net.SendToServer()
+    end)
+
     dhtml:SetHTML(StockBoard.BuildHTML())
     dhtml:RequestFocus()
+    dhtml:QueueJavascript("setLocalSteamID('" .. LocalPlayer():SteamID() .. "')")
 end
 
 function StockBoard.BuildHTML()
@@ -971,8 +1034,13 @@ end)
 net.Receive("StockBoard_SendLeaderboard", function()
     local cat = net.ReadString()
     local top = net.ReadTable()
-    -- On pourrait utiliser myRank/myValue aussi mais le JS gere juste le top 10 pour l'instant
-    StockBoard.JS("setLeaderboard", top)
+    local myRank = net.ReadUInt(16)
+    local myValue = net.ReadDouble()
+
+    if not IsValid(StockBoard.DHTML) then return end
+    local json = util.TableToJSON(top)
+    json = string.Replace(json, "'", "\\'")
+    StockBoard.DHTML:QueueJavascript("setLeaderboard('" .. json .. "', '" .. cat .. "', " .. tonumber(myRank) .. ", " .. tonumber(myValue) .. ")")
 end)
 
 net.Receive("StockBoard_PriceTick", function()
