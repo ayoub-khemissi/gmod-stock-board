@@ -391,6 +391,7 @@ tailwind.config = {
     
     // --- TABS ---
     function switchTab(id) {
+        sb.saveParam('tab', id);
         ['market', 'portfolio', 'charts', 'stats'].forEach(t => {
             document.getElementById('page-' + t).classList.toggle('hidden', t !== id);
             let btn = document.getElementById('tab-' + t);
@@ -879,6 +880,12 @@ tailwind.config = {
         setTimeout(() => { if (icon) icon.classList.remove('animate-spin'); }, 1000);
     }
 
+// --- Restore params (called from Lua on open) ---
+function restoreParams(json) {
+    let p = JSON.parse(json);
+    if (p.tab) switchTab(p.tab);
+}
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') sb.close();
 });
@@ -959,9 +966,21 @@ function StockBoard.OpenMenu()
         net.SendToServer()
     end)
 
+    dhtml:AddFunction("sb", "saveParam", function(key, value)
+        cookie.Set("sb_" .. tostring(key), tostring(value))
+    end)
+
     dhtml:SetHTML(StockBoard.BuildHTML())
     dhtml:RequestFocus()
     dhtml:QueueJavascript("setLocalSteamID('" .. LocalPlayer():SteamID() .. "')")
+
+    -- Restore saved tab
+    local savedTab = cookie.GetString("sb_tab", "")
+    if savedTab ~= "" then
+        local json = util.TableToJSON({tab = savedTab})
+        json = string.Replace(json, "'", "\\'")
+        dhtml:QueueJavascript("restoreParams('" .. json .. "')")
+    end
 end
 
 function StockBoard.BuildHTML()
